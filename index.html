@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二階堂茂生 - Portfolio</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <span class="nav__brand">Shigeo Nikaido</span>
+      <ul class="nav__links">
+        <li><a href="#about">プロフィール</a></li>
+        <li><a href="#experience">経歴</a></li>
+        <li><a href="#projects">プロジェクト</a></li>
+        <li><a href="#contact">連絡先</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>二階堂 茂生</h1>
+    <p>業務システムエンジニア / 中小企業向け基幹システムの設計・開発</p>
+  </div>
+
+  <section id="about">
+    <h2>プロフィール</h2>
+    <p>
+      大学卒業後、株式会社大阪オフィスオートメーションに入社しました。未経験から実務を積み重ね、
+      現在は、営業同行のデモンストレーションから打ち合わせ、システム設計・開発、操作指導、
+      アフターフォローまで、ソフトウェアに関わる業務全般を管理しています。
+    </p>
+    <p>
+      鋼材・食肉卸・市場・建設・繊維など、様々な業種の中小零細企業向けに業務システムを提供しており、
+      軽減税率対応やインボイス制度、電子帳簿保存法といった法改正に伴うシステム改修も経験しました。
+      システム全体を俯瞰し、業務課題に応じた最適なソリューションを提供する力を培ってきました。
+      これまでの経験を活かし、より大規模なシステム開発にも携わっていきたいと考えています。
+    </p>
+    <ul class="skills">
+      <li>システム設計・要件定義</li>
+      <li>業務アプリケーションSE</li>
+      <li>IT運用保守</li>
+      <li>Windows / Actian Zen (PSQL)</li>
+    </ul>
+  </section>
+
+  <section id="experience">
+    <h2>経歴</h2>
+    <div class="experience-item">
+      <div class="experience-item__header">
+        <h3>株式会社大阪オフィスオートメーション</h3>
+        <span class="experience-item__period">2003年10月 - 現在</span>
+      </div>
+      <p class="experience-item__role">SI事業部 システム開発課 兼 US営業課 / 役割：課長</p>
+      <p>
+        東芝テック事務コン機器の販売・コンサルタント業務に加え、中小零細企業向け業務システムの
+        企画・設計・開発から導入・操作指導・アフターフォロー、保守対応までを一貫して担当。
+        営業同行デモンストレーションや顧客ヒアリング・要件定義を通じて、現場の課題に即した
+        ソリューションを提供しています。
+      </p>
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>プロジェクト</h2>
+    <div class="projects-grid">
+      <article class="project-card">
+        <h3>鋼材業 販売管理システム</h3>
+        <p>
+          鉄鋼関連商品の販売・加工（定尺品、切断品、穴あけ加工、溶接加工、曲げ加工、プレス加工など）
+          を行う企業向けに開発。受注から出荷までのプロセスを一元管理し、手作業によるデータ入力や
+          伝票管理の手間を削減。加工進捗を可視化し、生産計画の最適化を実現しました。
+        </p>
+      </article>
+
+      <article class="project-card">
+        <h3>食肉卸 受発注LOT管理システム</h3>
+        <p>
+          食肉卸業者・外食チェーン・食品メーカー向けの受発注管理システム。輸入品の重量が確定しない
+          ケースに対応する仮発注機能、賞味期限・品質管理のためのロット番号単位の管理、複数倉庫間の
+          在庫移動を管理する機能を実装しました。
+        </p>
+      </article>
+
+      <article class="project-card">
+        <h3>電気機械器具卸売業 販売管理システム</h3>
+        <p>
+          エアー工具・電動工具・くぎ打器などの修理を行う企業向けに開発。見積前の預かり商品の管理を
+          Excelからシステムへ移行し、顧客からの問い合わせ・修理依頼を一元管理する業務支援システムを
+          設計・開発しました。
+        </p>
+      </article>
+
+      <article class="project-card">
+        <h3>運送管理システム</h3>
+        <p>
+          一般貨物自動車運送業を行う会社向けの配車・乗務員・給与管理システム。Excelで行っていた
+          配車・運行管理をシステムへ移行し、乗務実績から給与システムへ連動する仕組みを設計・開発
+          しました。
+        </p>
+      </article>
+
+      <article class="project-card">
+        <h3>内職管理システム</h3>
+        <p>
+          在宅ワーク・内職あっせん業向けの一元管理システム。受注先から預かった商品の在庫管理から、
+          内職あっせん先への依頼・回収数の管理までを設計・開発。作業実績は給与システムと連動させ
+          ました。
+        </p>
+      </article>
+
+      <article class="project-card">
+        <h3>呉服製造卸 在庫管理システム</h3>
+        <p>
+          呉服製造卸業向けの在庫管理システム。浮き貸し・浮き借りの在庫管理に対応し、バーコードを
+          活用した在庫管理の仕組みを設計・開発しました。
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="footer__links">
+      <a href="https://github.com/s-nikaido" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:nikaido1978@gmail.com">Email</a>
+    </div>
+    <p>&copy; 2026 二階堂茂生</p>
+  </footer>
+</body>
+</html>
