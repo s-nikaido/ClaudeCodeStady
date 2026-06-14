@@ -24,6 +24,13 @@
     --bg-b: #064e3b;
   }
 
+  body.stopwatch-mode {
+    --accent: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.45);
+    --bg-a: #0c1a2e;
+    --bg-b: #1e3a5f;
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -111,6 +118,51 @@
     border: 1px solid var(--accent);
     margin-bottom: 20px;
     transition: color 1s ease, border-color 1s ease;
+  }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-sub);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .tab-btn:hover {
+    color: var(--text-main);
+  }
+
+  .tab-btn.active {
+    background: var(--accent);
+    color: #1a1a2e;
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+
+  .view {
+    animation: view-fade 0.35s ease;
+  }
+
+  @keyframes view-fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .settings {
@@ -201,6 +253,46 @@
     font-variant-numeric: tabular-nums;
   }
 
+  .time-display--compact {
+    font-size: 3rem;
+    letter-spacing: 0.02em;
+  }
+
+  .laps {
+    max-height: 132px;
+    overflow-y: auto;
+    margin-bottom: 28px;
+    border-radius: 14px;
+  }
+
+  .laps:empty {
+    display: none;
+  }
+
+  .lap-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-sub);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .lap-item:first-child {
+    color: var(--text-main);
+  }
+
+  .lap-item:last-child {
+    border-bottom: none;
+  }
+
+  .lap-item .lap-number {
+    font-weight: 600;
+    color: var(--accent);
+  }
+
   .session-dots {
     display: flex;
     justify-content: center;
@@ -275,6 +367,15 @@
     background: rgba(255, 255, 255, 0.12);
   }
 
+  .btn-ghost:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost:disabled:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
   .btn-ghost svg {
     width: 22px;
     height: 22px;
@@ -291,6 +392,13 @@
     .time-display {
       font-size: 2.8rem;
     }
+    .time-display--compact {
+      font-size: 2.4rem;
+    }
+    .tab-btn {
+      font-size: 0.72rem;
+      padding: 10px 12px;
+    }
   }
 </style>
 </head>
@@ -299,47 +407,91 @@
   <div class="orb orb-2"></div>
 
   <main class="card">
-    <p class="mode-badge" id="modeLabel">Focus Time</p>
-
-    <div class="settings">
-      <label class="setting">
-        作業
-        <input type="number" id="focusInput" min="1" max="180" step="1" value="25" inputmode="numeric">
-        分
-      </label>
-      <label class="setting">
-        休憩
-        <input type="number" id="breakInput" min="1" max="60" step="1" value="5" inputmode="numeric">
-        分
-      </label>
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" id="tabPomodoroBtn" data-view="pomodoro" role="tab" aria-selected="true">ポモドーロ</button>
+      <button class="tab-btn" id="tabStopwatchBtn" data-view="stopwatch" role="tab" aria-selected="false">ストップウォッチ</button>
     </div>
 
-    <div class="ring-wrap" id="ringWrap">
-      <svg class="ring" viewBox="0 0 300 300">
-        <circle class="ring-track" cx="150" cy="150" r="140"></circle>
-        <circle class="ring-progress" id="ringProgress" cx="150" cy="150" r="140"></circle>
-      </svg>
-      <div class="time-display" id="timeDisplay">25:00</div>
-    </div>
+    <section class="view" id="pomodoroView">
+      <p class="mode-badge" id="modeLabel">Focus Time</p>
 
-    <div class="session-dots" id="sessionDots"></div>
+      <div class="settings">
+        <label class="setting">
+          作業
+          <input type="number" id="focusInput" min="1" max="180" step="1" value="25" inputmode="numeric">
+          分
+        </label>
+        <label class="setting">
+          休憩
+          <input type="number" id="breakInput" min="1" max="60" step="1" value="5" inputmode="numeric">
+          分
+        </label>
+      </div>
 
-    <div class="controls">
-      <button class="btn btn-ghost" id="resetBtn" aria-label="リセット" title="リセット">
-        <svg viewBox="0 0 24 24" fill="currentColor">
-          <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.74 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/>
+      <div class="ring-wrap" id="ringWrap">
+        <svg class="ring" viewBox="0 0 300 300">
+          <circle class="ring-track" cx="150" cy="150" r="140"></circle>
+          <circle class="ring-progress" id="ringProgress" cx="150" cy="150" r="140"></circle>
         </svg>
-      </button>
+        <div class="time-display" id="timeDisplay">25:00</div>
+      </div>
 
-      <button class="btn btn-primary" id="toggleBtn" aria-label="開始" title="開始">
-        <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
+      <div class="session-dots" id="sessionDots"></div>
+
+      <div class="controls">
+        <button class="btn btn-ghost" id="resetBtn" aria-label="リセット" title="リセット">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.74 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/>
+          </svg>
+        </button>
+
+        <button class="btn btn-primary" id="toggleBtn" aria-label="開始" title="開始">
+          <svg id="iconPlay" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <svg id="iconPause" viewBox="0 0 24 24" fill="currentColor" class="icon-hidden">
+            <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="view" id="stopwatchView" hidden>
+      <p class="mode-badge">Stopwatch</p>
+
+      <div class="ring-wrap" id="swRingWrap">
+        <svg class="ring" viewBox="0 0 300 300">
+          <circle class="ring-track" cx="150" cy="150" r="140"></circle>
+          <circle class="ring-progress" id="swRingProgress" cx="150" cy="150" r="140"></circle>
         </svg>
-        <svg id="iconPause" viewBox="0 0 24 24" fill="currentColor" class="icon-hidden">
-          <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
-        </svg>
-      </button>
-    </div>
+        <div class="time-display time-display--compact" id="swTimeDisplay">00:00.00</div>
+      </div>
+
+      <div class="laps" id="swLaps"></div>
+
+      <div class="controls">
+        <button class="btn btn-ghost" id="swResetBtn" aria-label="リセット" title="リセット">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.74 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4z"/>
+          </svg>
+        </button>
+
+        <button class="btn btn-primary" id="swToggleBtn" aria-label="開始" title="開始">
+          <svg id="swIconPlay" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <svg id="swIconPause" viewBox="0 0 24 24" fill="currentColor" class="icon-hidden">
+            <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+          </svg>
+        </button>
+
+        <button class="btn btn-ghost" id="swLapBtn" aria-label="ラップ" title="ラップ" disabled>
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6z"/>
+          </svg>
+        </button>
+      </div>
+    </section>
   </main>
 
 <script>
@@ -368,6 +520,11 @@
   const focusInput = document.getElementById('focusInput');
   const breakInput = document.getElementById('breakInput');
 
+  let activeView = 'pomodoro';
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const pomodoroView = document.getElementById('pomodoroView');
+  const stopwatchView = document.getElementById('stopwatchView');
+
   ringProgress.style.strokeDasharray = `${CIRCUMFERENCE}`;
 
   function formatTime(totalSeconds) {
@@ -391,10 +548,31 @@
     ringProgress.style.strokeDashoffset = `${CIRCUMFERENCE * (1 - fraction)}`;
   }
 
+  function applyTheme() {
+    document.body.classList.remove('break-mode', 'stopwatch-mode');
+    if (activeView === 'stopwatch') {
+      document.body.classList.add('stopwatch-mode');
+    } else if (isBreak) {
+      document.body.classList.add('break-mode');
+    }
+  }
+
+  function switchView(view) {
+    activeView = view;
+    pomodoroView.hidden = view !== 'pomodoro';
+    stopwatchView.hidden = view !== 'stopwatch';
+    tabBtns.forEach((btn) => {
+      const isActive = btn.dataset.view === view;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', String(isActive));
+    });
+    applyTheme();
+  }
+
   function updateDisplay() {
     timeDisplay.textContent = formatTime(remainingSeconds);
     modeLabel.textContent = isBreak ? 'Break Time' : 'Focus Time';
-    document.body.classList.toggle('break-mode', isBreak);
+    applyTheme();
     updateRing();
   }
 
@@ -509,9 +687,113 @@
   resetBtn.addEventListener('click', resetTimer);
   focusInput.addEventListener('change', applyFocusDuration);
   breakInput.addEventListener('change', applyBreakDuration);
+  tabBtns.forEach((btn) => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
 
   renderSessionDots();
   updateDisplay();
+
+  // --- ストップウォッチ ---
+  const swRingWrap = document.getElementById('swRingWrap');
+  const swRingProgress = document.getElementById('swRingProgress');
+  const swTimeDisplay = document.getElementById('swTimeDisplay');
+  const swLaps = document.getElementById('swLaps');
+  const swToggleBtn = document.getElementById('swToggleBtn');
+  const swResetBtn = document.getElementById('swResetBtn');
+  const swLapBtn = document.getElementById('swLapBtn');
+  const swIconPlay = document.getElementById('swIconPlay');
+  const swIconPause = document.getElementById('swIconPause');
+
+  let swElapsedMs = 0;
+  let swRunning = false;
+  let swIntervalId = null;
+  let swStartTimestamp = 0;
+  let swLapCount = 0;
+  let swLastLapMs = 0;
+
+  swRingProgress.style.strokeDasharray = `${CIRCUMFERENCE}`;
+
+  function formatStopwatchTime(ms) {
+    const centiseconds = Math.floor((ms % 1000) / 10);
+    const totalSeconds = Math.floor(ms / 1000);
+    const seconds = totalSeconds % 60;
+    const minutes = Math.floor(totalSeconds / 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
+  }
+
+  function updateSwRing() {
+    const fraction = (swElapsedMs % 60000) / 60000;
+    swRingProgress.style.strokeDashoffset = `${CIRCUMFERENCE * (1 - fraction)}`;
+  }
+
+  function updateSwDisplay() {
+    swTimeDisplay.textContent = formatStopwatchTime(swElapsedMs);
+    updateSwRing();
+  }
+
+  function setSwRunning(running) {
+    swRunning = running;
+    swRingWrap.classList.toggle('is-running', running);
+    swIconPlay.classList.toggle('icon-hidden', running);
+    swIconPause.classList.toggle('icon-hidden', !running);
+    swToggleBtn.setAttribute('aria-label', running ? '一時停止' : '開始');
+    swToggleBtn.setAttribute('title', running ? '一時停止' : '開始');
+    swLapBtn.disabled = !running;
+    swResetBtn.disabled = running;
+  }
+
+  function swTick() {
+    swElapsedMs = Date.now() - swStartTimestamp;
+    updateSwDisplay();
+  }
+
+  function startStopwatch() {
+    if (swIntervalId !== null) return;
+    swStartTimestamp = Date.now() - swElapsedMs;
+    swIntervalId = setInterval(swTick, 10);
+    setSwRunning(true);
+  }
+
+  function stopStopwatch() {
+    clearInterval(swIntervalId);
+    swIntervalId = null;
+    setSwRunning(false);
+  }
+
+  function toggleStopwatch() {
+    if (swRunning) {
+      stopStopwatch();
+    } else {
+      startStopwatch();
+    }
+  }
+
+  function resetStopwatch() {
+    if (swRunning) return;
+    swElapsedMs = 0;
+    swLapCount = 0;
+    swLastLapMs = 0;
+    swLaps.innerHTML = '';
+    updateSwDisplay();
+  }
+
+  function recordLap() {
+    if (!swRunning) return;
+    swLapCount++;
+    const lapMs = swElapsedMs - swLastLapMs;
+    swLastLapMs = swElapsedMs;
+    const item = document.createElement('div');
+    item.className = 'lap-item';
+    item.innerHTML = `<span class="lap-number">Lap ${swLapCount}</span><span>${formatStopwatchTime(lapMs)}</span><span>${formatStopwatchTime(swElapsedMs)}</span>`;
+    swLaps.insertBefore(item, swLaps.firstChild);
+  }
+
+  swToggleBtn.addEventListener('click', toggleStopwatch);
+  swResetBtn.addEventListener('click', resetStopwatch);
+  swLapBtn.addEventListener('click', recordLap);
+
+  updateSwDisplay();
 </script>
 </body>
 </html>
